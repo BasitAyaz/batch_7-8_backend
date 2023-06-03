@@ -1,36 +1,14 @@
 const express = require("express");
 const studentModel = require("../models/studentModel");
 const { sendResponse } = require("../helper/helper");
+const StudentController = require("../controllers/studentcontroller");
 
 const route = express.Router();
 
-route.get("/", async (req, res) => {
-  try {
-    const result = await studentModel.find();
-    if (!result) {
-      res.send(sendResponse(false, null, "No Data Found")).status(404);
-    } else {
-      res.send(sendResponse(true, result)).status(200);
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(sendResponse(false, null, "Internal Server Error")).status(400);
-  }
-});
-route.get("/search", async (req, res) => {
-  let { firstName, LastName } = req.body;
-  if (firstName) {
-    let result = await studentModel.find({
-      firstName: firstName,
-      LastName: LastName,
-    });
-    if (!result) {
-      res.send(sendResponse(false, null, "No Data Found")).status(404);
-    } else {
-      res.send(sendResponse(true, result)).status(200);
-    }
-  }
-});
+route.get("/", StudentController.getStudents);
+
+route.get("/search", StudentController.searchStudent);
+route.post("/searchStd", StudentController.searchWithPagination);
 route.get("/:id", async (req, res) => {
   try {
     let id = req.params.id;
